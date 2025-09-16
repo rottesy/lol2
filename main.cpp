@@ -195,7 +195,7 @@ const double WEIGHT_DIVISOR = 100.0;
 
 class Transport 
 {
-protected:
+private:
     double speedPerH;
     double costPerKm;
     double capacity;
@@ -205,6 +205,10 @@ public:
         : speedPerH(speed), costPerKm(cost), capacity(cap) {}
     
     virtual ~Transport() = default;
+
+    double getSpeed() const { return speedPerH; }
+    double getCostPerKm() const { return costPerKm; }
+    double getCapacity() const { return capacity; }
     
     virtual double calculateTime(double distance) 
     {
@@ -256,17 +260,19 @@ private:
     int maxPassengers;
     
 public:
+
+    using Transport::Transport;
     Car(double speed, double cost, double cap, int maxPass) 
         : Transport(speed, cost, cap), maxPassengers(maxPass) {}
     
     [[nodiscard]] double calculateCost(double distance, double weight) const override
     {
-        if (weight > capacity)
+        if (weight > getCapacity())
         {
             cout << "A car can't carry such a load!" << "\n";
             return -1;
         }
-        return distance * costPerKm * (1 + weight / CAR_WEIGHT_FACTOR);
+        return distance * getCostPerKm() * (1 + weight / CAR_WEIGHT_FACTOR);
     }
     
     [[nodiscard]] double calculatePassengerCost(double distance, int passengers) const override
@@ -276,7 +282,7 @@ public:
             cout << "A car can't carry that many passengers." << "\n";
             return -1;
         }
-        return distance * costPerKm * passengers;
+        return distance * getCostPerKm() * passengers;
     }
     
     void displayInfo() const override
@@ -303,17 +309,18 @@ public:
 class Bicycle : public Transport
 {
 public:
+    using Transport::Transport;
     Bicycle(double speed, double cost, double cap) 
         : Transport(speed, cost, cap) {}
     
     [[nodiscard]] double calculateCost(double distance, double weight) const override
     {
-        if (weight > capacity)
+        if (weight > getCapacity())
         {
             cout << "A bicycle can't carry such a load!" << "\n";
             return -1;
         }
-        return distance * costPerKm * (1 + weight / BICYCLE_WEIGHT_FACTOR);
+        return distance * getCostPerKm() * (1 + weight / BICYCLE_WEIGHT_FACTOR);
     }
     
     [[nodiscard]] double calculatePassengerCost(double distance, int passengers) const override
@@ -323,7 +330,7 @@ public:
             cout << "The bicycle can only carry 1 passenger!" << "\n";
             return -1;
         }
-        return distance * costPerKm;
+        return distance * getCostPerKm();
     }
     
     void displayInfo() const override
@@ -345,22 +352,23 @@ private:
     int numberOfHorses;
     
 public:
+    using Transport::Transport;
     Carriage(double speed, double cost, double cap, int horses) 
         : Transport(speed, cost, cap), numberOfHorses(horses) {}
     
     [[nodiscard]] double calculateCost(double distance, double weight) const override
     {
-        if (weight > capacity)
+        if (weight > getCapacity())
         {
             cout << "A carriage can't carry such a load!" << "\n";
             return -1;
         }
-        return distance * costPerKm * (weight / WEIGHT_DIVISOR) * numberOfHorses * CARRIAGE_HORSE_FACTOR;
+        return distance * getCostPerKm() * (weight / WEIGHT_DIVISOR) * numberOfHorses * CARRIAGE_HORSE_FACTOR;
     }
     
     [[nodiscard]] double calculatePassengerCost(double distance, int passengers) const override
     {
-        return distance * costPerKm * passengers * CARRIAGE_PASSENGER_DISCOUNT;
+        return distance * getCostPerKm() * passengers * CARRIAGE_PASSENGER_DISCOUNT;
     }
     
     void displayInfo() const override
@@ -441,14 +449,12 @@ void demonstrateTransport(Transport* transport, double distance, double weight, 
     cout << "Transportation time for " << distance << " km: " 
          << time << " hours (" << time * 60 << " minutes)" << "\n";
     
-    double cost = transport->calculateCost(distance, weight);
-    if (cost >= 0)
+    if(double cost = transport->calculateCost(distance, weight);cost >= 0)
     {
         cout << "Transportation cost for " << weight << " kg: " << cost << " BYN" << "\n";
     }
     
-    double passengerCost = transport->calculatePassengerCost(distance, passengers);
-    if (passengerCost >= 0)
+    if(double passengerCost = transport->calculatePassengerCost(distance, passengers);passengerCost >= 0)
     {
         cout << "Transportation cost for " << passengers << " passengers: " << passengerCost << " BYN" << "\n";
     }
@@ -459,8 +465,9 @@ void demonstrateTransport(Transport* transport, double distance, double weight, 
 int main() 
 {
    
-    double distance, weight;
-    int passengers;
+    double distance = 0;
+    double weight = 0;
+    int passengers = 0;
     inputTransportationDetails(distance, weight, passengers);
     
     
