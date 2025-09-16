@@ -310,8 +310,6 @@ class Bicycle : public Transport
 {
 public:
     using Transport::Transport;
-    Bicycle(double speed, double cost, double cap) 
-        : Transport(speed, cost, cap) {}
     
     [[nodiscard]] double calculateCost(double distance, double weight) const override
     {
